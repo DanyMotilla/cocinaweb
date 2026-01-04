@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cocina Web – We cook the websites so you cook the food</title>
+
+  <!-- Base Coat UI -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@base-coat/core@0.1.2/dist/base-coat.css">
+
+  <!-- 3D / site logic -->
+  <script type="module" src="/main-site.js"></script>
+
+  <style>
+    :root {
+      --michelin-red: #C8102E;
+      --deep-red: #9B0A23;
+      --white: #FFFFFF;
+      --off-white: #F8F8F8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Playfair Display', Georgia, serif;
+      background: linear-gradient(135deg, var(--michelin-red) 0%, var(--deep-red) 100%);
+      color: var(--white);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 24px 40px;
+      background: rgba(200, 16, 46, 0.95);
+      backdrop-filter: blur(12px);
+      font-weight: 300;
+      font-size: 20px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.7;
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        gap: 16px;
+        padding: 20px 24px;
+      }
+      
+      .nav-links {
+        gap: 24px;
+        font-size: 12px;
+      }
+    }
+
+    main {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 60px;
+      padding: 160px 80px 80px;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 140px 32px 60px;
+      }
+    }
+
+    h1 {
+      font-size: clamp(42px, 5.5vw, 72px);
+      line-height: 1.1;
+      margin-bottom: 32px;
+      font-weight: 400;
+      letter-spacing: -1px;
+      color: var(--white);
+    }
+
+    h2 {
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1.2;
+      margin-bottom: 48px;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+
+    p {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 18px;
+      color: rgba(255,255,255,0.85);
+      max-width: 520px;
+      margin-bottom: 40px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* Newsletter container */
+    .newsletter {
+      max-width: 420px;
+    }
+
+    /* Override newsletter form styles to match theme */
+    .newsletter input[type="email"] {
+      background: rgba(255,255,255,0.95) !important;
+      color: var(--michelin-red) !important;
+      border: 1px solid rgba(255,255,255,0.2) !important;
+      padding: 14px 18px !important;
+      border-radius: 4px !important;
+      font-family: 'Inter', system-ui, sans-serif !important;
+    }
+
+    .newsletter button {
+      background: var(--white) !important;
+      color: var(--michelin-red) !important;
+      border: none !important;
+      padding: 14px 32px !important;
+      border-radius: 4px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.5px !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .newsletter button:hover {
+      background: var(--off-white) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* 3D scene */
+    .scene-wrap {
+      position: relative;
+      height: 520px;
+    }
+
+    .scene-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -100px;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    #scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    .hint {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: var(--white);
+      background: rgba(255,255,255,0.15);
+      padding: 10px 18px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 300;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Blog Section */
+    .blog-section {
+      padding: 100px 80px;
+      background: rgba(0,0,0,0.1);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .blog-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 32px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--white);
+      display: block;
+    }
+
+    .blog-card:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .blog-card h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      font-weight: 400;
+      line-height: 1.3;
+    }
+
+    .blog-card .date {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .blog-card .excerpt {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 0;
+    }
+
+    .view-all {
+      text-align: center;
+      margin-top: 48px;
+    }
+
+    .view-all a {
+      display: inline-block;
+      padding: 14px 32px;
+      background: var(--white);
+      color: var(--michelin-red);
+      text-decoration: none;
+      border-radius: 4px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .view-all a:hover {
+      background: var(--off-white);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 900px) {
+      .blog-section {
+        padding: 80px 32px;
+      }
+
+      .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    footer {
+      padding: 60px 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      letter-spacing: 1px;
+      font-weight: 300;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Load Playfair Display font */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&display=swap');
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div>Cocina Web</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/blog.html">Blog</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main>
+    <section>
+      <h1>
+        We cook the websites<br />
+        so you cook the food
+      </h1>
+
+      <p>
+        Thoughtful websites for kitchens, chefs, cafés,
+        and food brands. Designed with taste.
+      </p>
+
+      <div class="newsletter">
+        <script async src="https://eocampaign1.com/form/c5b3c7a8-e863-11f0-a840-514a9ab6f053.js" data-form="c5b3c7a8-e863-11f0-a840-514a9ab6f053"></script>
+      </div>
+    </section>
+
+    <section class="scene-wrap">
+      <div id="scene"></div>
+      <div class="hint">drag gently</div>
+    </section>
+  </main>
+
+  <!-- Blog Section -->
+  <section class="blog-section">
+    <h2>Latest from the Kitchen</h2>
+    
+    <div class="blog-grid">
+      <a href="/blog/post-1.html" class="blog-card">
+        <div class="date">December 15, 2024</div>
+        <h3>5 Web Design Trends Every Restaurant Should Know</h3>
+        <p class="excerpt">Discover the latest design trends that are transforming how diners interact with restaurant websites in 2025.</p>
+      </a>
+
+      <a href="/blog/post-2.html" class="blog-card">
+        <div class="date">December 8, 2024</div>
+        <h3>Why Your Café Needs More Than Just a Menu Online</h3>
+        <p class="excerpt">Learn how to create an immersive digital experience that brings customers through your doors.</p>
+      </a>
+
+      <a href="/blog/post-3.html" class="blog-card">
+        <div class="date">December 1, 2024</div>
+        <h3>SEO for Restaurants: Getting Found by Hungry Customers</h3>
+        <p class="excerpt">Essential SEO strategies to ensure your restaurant appears when locals search for their next meal.</p>
+      </a>
+    </div>
+
+    <div class="view-all">
+      <a href="/blog.html">View All Articles</a>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Cocina Web – San Luis Potosí
+  </footer>
+
+</body>
+</html>
